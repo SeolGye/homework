@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+<!-- Root Context: 
+ view와 관련되지 않은 객체를 정의
+Service, Repository(DAO), DB등 비즈니스 로직과 관련된 설정
+-->
+
+
+	<context:component-scan
+		base-package="com.seol.homework">
+		<context:exclude-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+
+
+	<context:annotation-config />
+
+<!-- 데이터베이스 url과 유저 정보 -->
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+		<property name="driverClass" value="oracle.jdbc.OracleDriver" />
+		<property name="url"
+			value="jdbc:oracle:thin:@localhost:1521:orcl" />
+		<property name="username" value="seol" />
+		<property name="password" value="1111" />
+	</bean>
+
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+
+	</bean>
+
+
+<!-- 세션 팩토리 설정. 
+데이터소스
+패키지
+mapper 위치 정보-->
+<!-- sqlSession을 만드는 역할 -->
+	<bean id="sqlSessionFactory"
+		class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- db 연결정보 -->
+		<property name="dataSource" ref="dataSource" />
+		<!--사용할 모델 클래스 위치-->
+		<property name="typeAliasesPackage"
+			value="com.seol.homework.domain" />
+		<!-- Mapper.xml 위치 -->
+		<property name="mapperLocations"
+			value="classpath:mapper/*.xml" />
+	</bean>
+
+<!-- sql 실제 호출하는 역할 -->
+	<bean id="sqlSession"
+		class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg name="sqlSessionFactory"
+			ref="sqlSessionFactory" />
+	</bean>
+
+</beans>
